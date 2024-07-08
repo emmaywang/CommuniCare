@@ -41,6 +41,9 @@ importers:
       geofirestore:
         specifier: ^5.2.0
         version: 5.2.0
+      ngeohash:
+        specifier: ^0.6.3
+        version: 0.6.3
       node-fetch:
         specifier: ^2.7.0
         version: 2.7.0
@@ -4543,6 +4546,11 @@ packages:
   /negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /ngeohash@0.6.3:
+    resolution: {integrity: sha512-kltF0cOxgx1AbmVzKxYZaoB0aj7mOxZeHaerEtQV0YaqnkXNq26WWqMmJ6lTqShYxVRWZ/mwvvTrNeOwdslWiw==}
+    engines: {node: '>=v0.2.0'}
     dev: false
 
   /node-fetch@2.6.7:

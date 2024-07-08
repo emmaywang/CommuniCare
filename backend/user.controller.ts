@@ -36,6 +36,7 @@ export const getUserInsurance = async (id: string) => {
   }
 };
 
+/*
 export const getUserLanguage = async (id: string) => {
   const doc = await usersCollectionRef.doc(id).get();
   if (doc.exists) {
@@ -43,7 +44,7 @@ export const getUserLanguage = async (id: string) => {
   } else {
     return null;
   }
-};
+};*/
 
 
 
@@ -54,12 +55,13 @@ export const updateName = async (id: string, newName: string) => {
     
 };
 
+/*
 export const updateAge = async (id: string, newAge: number) => {
   return await usersCollectionRef
     .doc(id)
     .update({ age: newAge }); 
     
-};
+};*/
 
 export const updateInsurance = async (id: string, newInsurance: string) => {
   return await usersCollectionRef
@@ -68,13 +70,15 @@ export const updateInsurance = async (id: string, newInsurance: string) => {
     
 };
 
+
+/*
 export const updateLanguage = async (id: string, newLanguage: string) => {
   return await usersCollectionRef
     .doc(id)
     .update({ language: newLanguage }); 
     
 };
-
+*/
 
 
 export const deleteUser = async (id: string) => {

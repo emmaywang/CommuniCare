@@ -2,9 +2,9 @@ import express, { Express } from "express";
 
 import cors from "cors";
 
-import {getClinic, getClinicsRadius, getLanguages, getInsurance, getWebsite, getServices, getLocation} from "./clinics.controller";
+import {getClinic, getClinicsRadius, getClinicsRadius3, getLanguages, getInsurance, getWebsite, getServices, getLocation} from "./clinics.controller";
 import { Clinics, Users } from "../common/types";
-import {addUser, getUsers, getUser, getUserInsurance, getUserLanguage, updateAge, updateInsurance, updateLanguage, updateName, deleteUser} from "./user.controller";
+import {addUser, getUsers, getUser, getUserInsurance, updateInsurance, updateName, deleteUser} from "./user.controller";
 
 const app: Express = express();
 const port = 8080;
@@ -40,14 +40,16 @@ app.get("/api/clinics", async (req, res) => {
   }
 });
 
+
+//*****CHANGED */*********** */
 //get all clinics meeting requirements
 app.get('/api/clinics/search', async (req, res) => {
   console.log("getting by requirement")
   try {
-    const { userLatitude, userLongitude, radius, service, userID} = req.query;
+    const { userLatitude, userLongitude, radius, specialtyServices, clinicalServices, language, userID} = req.query;
     
 
-    if (!userLatitude || !userLongitude || !radius || !service || !userID) {
+    if (!userLatitude || !userLongitude || !radius || !specialtyServices || !clinicalServices || !language || !userID) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -56,14 +58,13 @@ app.get('/api/clinics/search', async (req, res) => {
     const userLng = String(userLongitude);
     const rad = String(radius);
     const userId = String(userID);
-    const serviceDesired=String(service);
+    const languagePreference=String(language)
+   // const serviceDesired=String(service);
     
-
-    const language = await getUserLanguage(userId);
     const insurance = await getUserInsurance(userId);
     
 
-    if (!language || !insurance) {
+    if (!insurance) {
       return res.status(404).json({ message: "User data not found" });
     }
 
@@ -71,15 +72,17 @@ app.get('/api/clinics/search', async (req, res) => {
     const parsedUserLongitude = parseFloat(userLng);
     const parsedRadius = parseFloat(rad);
     
-    //const parsedServices = typeof services === 'string' ? services.split(',') : (services as string[]);
+    const parsedSpecialtyServices = typeof specialtyServices=== 'string' ? specialtyServices.split(',') : (specialtyServices as string[]);
+    const parsedClinicalServices = typeof clinicalServices=== 'string' ? clinicalServices.split(',') : (clinicalServices as string[]);
 
-    const clinics = await getClinicsRadius(
+    const clinics = await getClinicsRadius3(
       parsedUserLatitude,
       parsedUserLongitude,
       parsedRadius,
       insurance,
-      language,
-      serviceDesired
+      languagePreference,
+      parsedSpecialtyServices,
+      parsedClinicalServices
     );
     res.status(200).send(clinics);
   } catch (error) {
@@ -91,17 +94,22 @@ app.get('/api/clinics/search', async (req, res) => {
 
 //----------------------------------------------
 //USER ROUTES
+
+//*****CHANGED!! */*********** */
 //add a new user
 app.post(`/api/users/:id`, async (req, res) => {
   console.log("[POST] entering '/users/:id' endpoint");
   const id: string = req.params.id;
-  const { name, age, sex, insurance, language } = req.body;
+  const { name, sex, address, city, state, zipCode, insurance, policy } = req.body;
   const user: Users = {
     name,
-    age,
     sex,
+    address,
+    city,
+    state,
+    zipCode,
     insurance,
-    language
+    policy
   };
 
   try {
@@ -160,6 +168,7 @@ app.delete("/api/users/:id", async (req, res) => {
 
 //PUT routes: updateAge, updateInsurance, updateLanguage, updateName
 
+/*
 //update age by user id
 app.put("/api/users/age/:id", async (req, res) => {
   console.log("[PUT] entering '/api/users/age/:id' endpoint");
@@ -176,7 +185,7 @@ app.put("/api/users/age/:id", async (req, res) => {
       error: `ERROR: an error occurred in the /api/users/age/:id endpoint: ${err}`,
     });
   }
-});
+});*/
 
 
 //update insurance by user id
@@ -198,6 +207,7 @@ app.put("/api/users/insurance/:id", async (req, res) => {
 });
 
 //update preferred language by user id
+/*
 app.put("/api/users/language/:id", async (req, res) => {
   console.log("[PUT] entering '/api/users/language/:id' endpoint");
   const id: string = req.params.id;
@@ -214,7 +224,7 @@ app.put("/api/users/language/:id", async (req, res) => {
     });
   }
 });
-
+*/
 
 //update name by user id
 app.put("/api/users/name/:id", async (req, res) => {
