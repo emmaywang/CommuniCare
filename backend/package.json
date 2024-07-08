@@ -26,6 +26,9 @@
     "scripts": {
       "dev": "nodemon server.ts",
       "build": "tsc"
-    }
+    },
+  "resolutions": {
+    "@google-cloud/firestore": "5.0.2"
+  }
   }
   
