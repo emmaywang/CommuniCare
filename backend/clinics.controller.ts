@@ -7,7 +7,7 @@ const clinicsCollectionRef = db.collection("clinics");
 //getClinic, getLanguages, getInsurance, getWebsite, getServices, getLocation
 import { geoFirestore } from './firebase'; 
 import { GeoPoint } from "firebase-admin/firestore";
-import * as ngeohash from 'ngeohash'
+//import * as ngeohash from 'ngeohash'
 
 
 //get all clinics
@@ -23,6 +23,8 @@ export const getClinics = async () => {
 //*****TO CHANGE!! */*********** */
 //get all clinics meeting given requirements
 //*** Later we should change it to accomodate an array of services desired */
+
+/** 
 export const getClinicsRadius = async (
   userLatitude: number, 
   userLongitude: number, 
@@ -83,7 +85,7 @@ export const getClinicsRadius = async (
 
   return clinics;
 };
-
+**/
 
 
 function haversineDistance(lat1, lon1, lat2, lon2) {

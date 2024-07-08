@@ -2,7 +2,7 @@ import express, { Express } from "express";
 
 import cors from "cors";
 
-import {getClinic, getClinicsRadius, getClinicsRadius3, getLanguages, getInsurance, getWebsite, getServices, getLocation} from "./clinics.controller";
+import {getClinic, getClinicsRadius3, getLanguages, getInsurance, getWebsite, getServices, getLocation} from "./clinics.controller";
 import { Clinics, Users } from "../common/types";
 import {addUser, getUsers, getUser, getUserInsurance, updateInsurance, updateName, deleteUser} from "./user.controller";
 
