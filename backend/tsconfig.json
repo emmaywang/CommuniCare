@@ -1,11 +1,14 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
-        "module": "CommonJS",
-        "strict": true,
-        "declaration": true,
-        "outDir": "./dist",
-        "esModuleInterop": true
+      "target": "es5",
+      "module": "commonjs",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,  // Important to ignore type conflicts in node_modules
+      "forceConsistentCasingInFileNames": true,
+      "outDir": "./dist"
     },
-    "include": ["*.ts"]
-}
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
+  }
+  
