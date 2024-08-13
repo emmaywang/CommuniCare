@@ -4,8 +4,7 @@ export type Clinics = {
     languages: string[],
     insurance: string[],
     website: string,
-    specialtyServices: string[],
-    clinicalServices: string[],
+    services: string[],
     walkIn: boolean,
     paymentModel: string,
     location: number[]
@@ -13,14 +12,11 @@ export type Clinics = {
 
 //documents labelled by user ID number (associated with email)
 export type Users = {
-    name: string;
+    name: string; // TODO: need to use username bc HIPAA
     sex: string;
-    address: string;
-    city: string;
-    state: string;
-    zipCode: number;
     insurance: string;
-    policy: string
+    policy: string;
+    services: string[]
 };
 
 

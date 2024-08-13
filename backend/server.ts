@@ -4,7 +4,8 @@ import cors from "cors";
 
 import {getClinic, getClinicsRadius3, getLanguages, getInsurance, getWebsite, getServices, getLocation} from "./clinics.controller";
 import { Clinics, Users } from "../common/types";
-import {addUser, getUsers, getUser, getUserInsurance, updateInsurance, updateName, deleteUser} from "./user.controller";
+import {addUser, getUsers, getUser, getUserInsurance, updateInsurance, updateName, updateSex,
+         updatePolicyName,  deleteUser, getUserServices} from "./user.controller";
 
 const app: Express = express();
 const port = 8080;
@@ -46,10 +47,10 @@ app.get("/api/clinics", async (req, res) => {
 app.get('/api/clinics/search', async (req, res) => {
   console.log("getting by requirement")
   try {
-    const { userLatitude, userLongitude, radius, specialtyServices, clinicalServices, language, userID} = req.query;
+    const { userLatitude, userLongitude, radius, language, userID} = req.query;
     
 
-    if (!userLatitude || !userLongitude || !radius || !specialtyServices || !clinicalServices || !language || !userID) {
+    if (!userLatitude || !userLongitude || !radius || !language || !userID) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -60,29 +61,25 @@ app.get('/api/clinics/search', async (req, res) => {
     const userId = String(userID);
     const languagePreference=String(language)
    // const serviceDesired=String(service);
+    const services=await getUserServices(userId)
     
-    const insurance = await getUserInsurance(userId);
+    //const insurance = await getUserInsurance(userId);
     
 
-    if (!insurance) {
-      return res.status(404).json({ message: "User data not found" });
-    }
+    // if (!insurance) {
+    //   return res.status(404).json({ message: "User data not found" });
+    // }
 
     const parsedUserLatitude = parseFloat(userLat);
     const parsedUserLongitude = parseFloat(userLng);
     const parsedRadius = parseFloat(rad);
     
-    const parsedSpecialtyServices = typeof specialtyServices=== 'string' ? specialtyServices.split(',') : (specialtyServices as string[]);
-    const parsedClinicalServices = typeof clinicalServices=== 'string' ? clinicalServices.split(',') : (clinicalServices as string[]);
-
     const clinics = await getClinicsRadius3(
       parsedUserLatitude,
       parsedUserLongitude,
       parsedRadius,
-      insurance,
       languagePreference,
-      parsedSpecialtyServices,
-      parsedClinicalServices
+      services
     );
     res.status(200).send(clinics);
   } catch (error) {
@@ -100,16 +97,13 @@ app.get('/api/clinics/search', async (req, res) => {
 app.post(`/api/users/:id`, async (req, res) => {
   console.log("[POST] entering '/users/:id' endpoint");
   const id: string = req.params.id;
-  const { name, sex, address, city, state, zipCode, insurance, policy } = req.body;
+  const { name, sex, insurance, policy, services } = req.body;
   const user: Users = {
     name,
     sex,
-    address,
-    city,
-    state,
-    zipCode,
     insurance,
-    policy
+    policy,
+    services
   };
 
   try {
@@ -243,6 +237,45 @@ app.put("/api/users/name/:id", async (req, res) => {
     });
   }
 });
+
+
+app.put("/api/users/sex/:id", async (req, res) => {
+  console.log("[PUT] entering '/api/users/sex/:id' endpoint");
+  const id: string = req.params.id;
+  const {sex}=req.body;
+  
+  try {
+    await updateSex(id, sex);
+    res.status(200).send({
+      message: `SUCCESS updated user with id: ${id} to sex: ${sex} from the users collection in Firestore`,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: `ERROR: an error occurred in the /api/users/sex/:id endpoint: ${err}`,
+    });
+  }
+});
+
+
+app.put("/api/users/policyname/:id", async (req, res) => {
+  console.log("[PUT] entering '/api/users/policyname/:id' endpoint");
+  const id: string = req.params.id;
+  const {policyName}=req.body;
+  
+  try {
+    await updatePolicyName(id, policyName);
+    res.status(200).send({
+      message: `SUCCESS updated user with id: ${id} to policy name: ${policyName} from the users collection in Firestore`,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: `ERROR: an error occurred in the /api/users/policyname/:id endpoint: ${err}`,
+    });
+  }
+});
+
+
+
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`SERVER listening on port ${port}`);

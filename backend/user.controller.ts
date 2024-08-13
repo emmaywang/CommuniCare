@@ -36,6 +36,14 @@ export const getUserInsurance = async (id: string) => {
   }
 };
 
+export const getUserServices = async (id: string) => {
+  const doc = await usersCollectionRef.doc(id).get();
+  if (doc.exists) {
+    return doc.data().services;
+  } else {
+    return null;
+  }
+};
 /*
 export const getUserLanguage = async (id: string) => {
   const doc = await usersCollectionRef.doc(id).get();
@@ -70,6 +78,21 @@ export const updateInsurance = async (id: string, newInsurance: string) => {
     
 };
 
+export const updateSex = async (id: string, newSex: string) => {
+  return await usersCollectionRef
+    .doc(id)
+    .update({ sex: newSex }); 
+    
+};
+
+
+
+export const updatePolicyName = async (id: string, newPolicyName: string) => {
+  return await usersCollectionRef
+    .doc(id)
+    .update({ policyName: newPolicyName }); 
+    
+};
 
 /*
 export const updateLanguage = async (id: string, newLanguage: string) => {

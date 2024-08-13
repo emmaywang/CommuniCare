@@ -106,10 +106,8 @@ export const getClinicsRadius3 = async (
   userLatitude: number, 
   userLongitude: number, 
   radius: number, 
-  insurance: string, 
   language: string,
-  specialtyServices: string[],
-  clinicalServices: string[]
+  services: string[],
 ) => {
   const clinicsCollectionRef = db.collection('clinics');
 
@@ -117,8 +115,6 @@ export const getClinicsRadius3 = async (
   console.log(`  Latitude: ${userLatitude}`);
   console.log(`  Longitude: ${userLongitude}`);
   console.log(`  Radius: ${radius}`);
-  console.log(`  specialty Service: ${specialtyServices}`);
-  console.log(`  specialty Service: ${clinicalServices}`);
 
   const snapshot = await clinicsCollectionRef.get();
   console.log(`Number of documents in snapshot: ${snapshot.size}`);
@@ -136,18 +132,14 @@ export const getClinicsRadius3 = async (
     console.log(`Distance to clinic ${doc.id}: ${distance} km`);
 
     if (distance <= radius) {
-      const containsInsurance = data.insurance.includes(insurance);
       const containsLanguage = data.languages.includes(language);
-      const containsSpecialtyServices = specialtyServices.every(service => data.specialtyServices.includes(service));
-      const containsClinicalServices=clinicalServices.every(service => data.clinicalServices.includes(service));
-
-
+      const containsServices = services.every(service => data.services.includes(service));
+      
       console.log(`Checking clinic ${doc.id}:`);
-      console.log(`  containsInsurance: ${containsInsurance}`);
       console.log(`  containsLanguage: ${containsLanguage}`);
       console.log(`  containsServices: ${containsServices}`);
 
-      if (containsInsurance && containsLanguage && containsSpecialtyServices && containsClinicalServices) {
+      if (containsLanguage && containsSpecialtyServices && containsClinicalServices) {
         clinics[doc.id] = data;
       }
     }
