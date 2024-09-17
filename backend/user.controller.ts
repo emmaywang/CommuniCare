@@ -56,10 +56,10 @@ export const getUserLanguage = async (id: string) => {
 
 
 
-export const updateName = async (id: string, newName: string) => {
+export const updateUsername = async (id: string, newUsername: string) => {
   return await usersCollectionRef
     .doc(id)
-    .update({ name: newName }); 
+    .update({ username: newUsername }); 
     
 };
 
@@ -103,6 +103,32 @@ export const updateLanguage = async (id: string, newLanguage: string) => {
 };
 */
 
+export const updateServices=async (id: string, addServices: Array, removeServices: Array)=>{
+  const user = usersCollectionRef.doc(id);
+  const updates: any = {};
+  
+  // Add services to the array
+  if (addServices && addServices.length > 0) {
+    updates.services = admin.firestore.FieldValue.arrayUnion(...addServices);
+  }
+
+  // Remove services from the array
+  if (removeServices && removeServices.length > 0) {
+    updates.services = admin.firestore.FieldValue.arrayRemove(...removeServices);
+  }
+
+  // Only proceed with updates if there's something to update
+  if (Object.keys(updates).length > 0) {
+    await user.update(updates);
+    res.status(200).send({
+      message: `SUCCESS updated user with id: ${id}, added services: ${addServices || 'none'}, removed services: ${removeServices || 'none'}`,
+    });
+  } else {
+    res.status(400).send({
+      error: "No services to add or remove.",
+    });
+  }
+}
 
 export const deleteUser = async (id: string) => {
   return await usersCollectionRef.doc(id).delete();

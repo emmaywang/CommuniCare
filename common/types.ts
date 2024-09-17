@@ -1,18 +1,17 @@
 
-//documents labelled by clinic name
-export type Clinics = {
+//documents labelled by program name
+export type Programs = {
     languages: string[],
-    insurance: string[],
     website: string,
     services: string[],
-    walkIn: boolean,
     paymentModel: string,
+    clinic: string,
     location: number[]
 };
 
 //documents labelled by user ID number (associated with email)
 export type Users = {
-    name: string; // TODO: need to use username bc HIPAA
+    username: string; // TODO: need to use username bc HIPAA
     sex: string;
     insurance: string;
     policy: string;

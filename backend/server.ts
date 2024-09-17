@@ -2,10 +2,11 @@ import express, { Express } from "express";
 
 import cors from "cors";
 
-import {getClinic, getClinicsRadius3, getLanguages, getInsurance, getWebsite, getServices, getLocation} from "./clinics.controller";
-import { Clinics, Users } from "../common/types";
-import {addUser, getUsers, getUser, getUserInsurance, updateInsurance, updateName, updateSex,
-         updatePolicyName,  deleteUser, getUserServices} from "./user.controller";
+import {getProgram, getProgramsRadius3, getLanguages, getInsurance, getWebsite, getServices, getLocation} from "./programs.controller";
+import { Programs, Users } from "../common/types";
+import {addUser, getUsers, getUser, getUserInsurance, updateInsurance, updateUsername, updateSex,
+         updatePolicyName,  deleteUser, getUserServices,
+         updateServices} from "./user.controller";
 
 const app: Express = express();
 const port = 8080;
@@ -16,35 +17,35 @@ app.use(express.json());
 
 
 //----------------------------------------------
-//clinic ROUTES
+//program ROUTES
 
 
-//get clinic by name
-app.get("/api/clinics", async (req, res) => {
-  console.log("[GET] entering 'clinics/:id' endpoint");
+//get program by username
+app.get("/api/programs", async (req, res) => {
+  console.log("[GET] entering 'programs/:id' endpoint");
   const id: string = String(req.query.id);
   try {
-    const clinic = await getClinic(id); 
-    if (clinic === null) {
+    const program = await getProgram(id); 
+    if (program === null) {
       res
         .status(404)
         .send({
-          error: `ERROR: clinic with id: ${id} not found in Firestore`,
+          error: `ERROR: program with id: ${id} not found in Firestore`,
         });
     } else {
-      res.status(200).send(clinic);
+      res.status(200).send(program);
     }
   } catch (err) {
     res.status(500).json({
-      error: `ERROR: an error occurred in the /api/clinics/:id endpoint: ${err}`,
+      error: `ERROR: an error occurred in the /api/programs/:id endpoint: ${err}`,
     });
   }
 });
 
 
 //*****CHANGED */*********** */
-//get all clinics meeting requirements
-app.get('/api/clinics/search', async (req, res) => {
+//get all programs meeting requirements
+app.get('/api/programs/search', async (req, res) => {
   console.log("getting by requirement")
   try {
     const { userLatitude, userLongitude, radius, language, userID} = req.query;
@@ -74,14 +75,14 @@ app.get('/api/clinics/search', async (req, res) => {
     const parsedUserLongitude = parseFloat(userLng);
     const parsedRadius = parseFloat(rad);
     
-    const clinics = await getClinicsRadius3(
+    const programs = await getProgramsRadius3(
       parsedUserLatitude,
       parsedUserLongitude,
       parsedRadius,
       languagePreference,
       services
     );
-    res.status(200).send(clinics);
+    res.status(200).send(programs);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -97,9 +98,9 @@ app.get('/api/clinics/search', async (req, res) => {
 app.post(`/api/users/:id`, async (req, res) => {
   console.log("[POST] entering '/users/:id' endpoint");
   const id: string = req.params.id;
-  const { name, sex, insurance, policy, services } = req.body;
+  const { username, sex, insurance, policy, services } = req.body;
   const user: Users = {
-    name,
+    username,
     sex,
     insurance,
     policy,
@@ -112,7 +113,7 @@ app.post(`/api/users/:id`, async (req, res) => {
     res.status(200).send(user);
   } catch (err) {
     res.status(500).json({
-      error: `ERROR: an error occurred in the /api/users/:name endpoint: ${err}`,
+      error: `ERROR: an error occurred in the /api/users/:username endpoint: ${err}`,
     });
   }
 });
@@ -160,7 +161,7 @@ app.delete("/api/users/:id", async (req, res) => {
 });
 
 
-//PUT routes: updateAge, updateInsurance, updateLanguage, updateName
+//PUT routes: updateAge, updateInsurance, updateLanguage, updateUsername
 
 /*
 //update age by user id
@@ -220,20 +221,20 @@ app.put("/api/users/language/:id", async (req, res) => {
 });
 */
 
-//update name by user id
-app.put("/api/users/name/:id", async (req, res) => {
-  console.log("[PUT] entering '/api/users/name/:id' endpoint");
+//update username by user id
+app.put("/api/users/username/:id", async (req, res) => {
+  console.log("[PUT] entering '/api/users/username/:id' endpoint");
   const id: string = req.params.id;
-  const {name}=req.body;
+  const {username}=req.body;
   
   try {
-    await updateName(id, name);
+    await updateUsername(id, username);
     res.status(200).send({
-      message: `SUCCESS updated user with id: ${id} to name: ${name} from the users collection in Firestore`,
+      message: `SUCCESS updated user with id: ${id} to username: ${username} from the users collection in Firestore`,
     });
   } catch (err) {
     res.status(500).json({
-      error: `ERROR: an error occurred in the /api/users/name/:id endpoint: ${err}`,
+      error: `ERROR: an error occurred in the /api/users/username/:id endpoint: ${err}`,
     });
   }
 });
@@ -275,6 +276,24 @@ app.put("/api/users/policyname/:id", async (req, res) => {
 });
 
 
+//update user's requested services by user id
+app.put("/api/users/services/:id", async (req, res) => {
+  console.log("[PUT] entering '/api/users/services/:id' endpoint");
+  
+  const id: string = req.params.id;
+  const { addServices, removeServices } = req.body;  // addServices and removeServices are arrays
+
+  try {
+    await updateServices(id, addServices, removeServices);
+    res.status(200).send({
+      message: `SUCCESS updated requested services of user with id: ${id} from the users collection in Firestore`,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: `ERROR: an error occurred in the /api/users/services/:id endpoint: ${err}`,
+    });
+  }
+});
 
 
 app.listen(port, '0.0.0.0', () => {
